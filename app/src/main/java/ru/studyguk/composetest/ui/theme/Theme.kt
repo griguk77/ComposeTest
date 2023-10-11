@@ -1,4 +1,4 @@
-package com.example.compose
+package ru.studyguk.composetest.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

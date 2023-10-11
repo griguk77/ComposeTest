@@ -1,4 +1,4 @@
-package com.example.compose
+package ru.studyguk.composetest.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val md_theme_light_primary = Color(0xFF005AC4)

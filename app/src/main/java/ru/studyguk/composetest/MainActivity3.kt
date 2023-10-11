@@ -1,5 +1,6 @@
 package ru.studyguk.composetest
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,54 +12,89 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.compose.ComposeTestTheme
+import ru.studyguk.composetest.ui.theme.ComposeTestTheme
 
 class MainActivity3 : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val queList = getQuestionList()
         setContent {
-            val currentQueNum = remember { mutableStateOf(0) }
-            val btnText = remember { mutableStateOf("Продолжить") }
-            val checkedState0 = remember { mutableStateOf(false) }
-            val checkedState1 = remember { mutableStateOf(false) }
-            val checkedState2 = remember { mutableStateOf(false) }
-            val checkedState3 = remember { mutableStateOf(false) }
             ComposeTestTheme {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 30.dp, end = 30.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Scaffold(
+                    topBar = {
+                        MakeTopBar()
+                    },
                 ) {
-                    SetTestName()
-                    SetProgress(queList, currentQueNum)
-                    SetQuestionText(queList, currentQueNum)
-                    SetVariants(
-                        currentQueNum,
-                        queList,
-                        checkedState0,
-                        checkedState1,
-                        checkedState2,
-                        checkedState3
-                    )
+                    val currentQueNum = remember { mutableStateOf(0) }
+                    val btnText = remember { mutableStateOf("Продолжить") }
+                    val checkedState0 = remember { mutableStateOf(false) }
+                    val checkedState1 = remember { mutableStateOf(false) }
+                    val checkedState2 = remember { mutableStateOf(false) }
+                    val checkedState3 = remember { mutableStateOf(false) }
+                    ComposeTestTheme {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 30.dp, end = 30.dp),
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            SetTestName()
+                            SetProgress(queList, currentQueNum)
+                            SetQuestionText(queList, currentQueNum)
+                            SetVariants(
+                                currentQueNum,
+                                queList,
+                                checkedState0,
+                                checkedState1,
+                                checkedState2,
+                                checkedState3
+                            )
+                        }
+                        SetContinueButton(
+                            currentQueNum,
+                            btnText,
+                            checkedState0,
+                            checkedState1,
+                            checkedState2,
+                            checkedState3
+                        )
+                    }
                 }
-                SetContinueButton(
-                    currentQueNum,
-                    btnText,
-                    checkedState0,
-                    checkedState1,
-                    checkedState2,
-                    checkedState3
-                )
             }
         }
+    }
+
+    @Composable
+    private fun MakeTopBar() {
+        SmallTopAppBar(
+            colors = TopAppBarDefaults.smallTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+            ),
+            title = {
+                Text("Testing System")
+            },
+            navigationIcon = {
+                IconButton(onClick = {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                }) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_baseline_logout_24),
+                        contentDescription = "Logout"
+                    )
+                }
+            }
+        )
     }
 
     @Composable
@@ -83,8 +119,8 @@ class MainActivity3 : ComponentActivity() {
                         btnText.value = "Закончить тест"
                     }
                     if (currentQueNum.value == 2) {
-                        btnText.value = "Продолжить"
-                        currentQueNum.value = 0
+                        val intent = Intent(this@MainActivity3, MainActivity4::class.java)
+                        startActivity(intent)
                     } else {
                         currentQueNum.value++
                     }
@@ -204,7 +240,7 @@ class MainActivity3 : ComponentActivity() {
     @Composable
     private fun SetTestName() {
         Text(
-            text = "Название предмета",
+            text = "Название теста",
             fontSize = 34.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(top = 20.dp)
@@ -212,6 +248,64 @@ class MainActivity3 : ComponentActivity() {
     }
 
     private fun getQuestionList(): List<Question> {
+        return listOf(
+            Question(
+                1,
+                "Биссектриса - это ...",
+                listOf(
+                    "Прямая, делящая угол пополам",
+                    "Прямая, делящая сторону пополам",
+                    "Центр пересечения перпендикуляров",
+                    "Связанный набор параметров"
+                )
+            ),
+            Question(
+                2,
+                "Медиана - это ...",
+                listOf(
+                    "Прямая, делящая угол пополам",
+                    "Прямая, делящая сторону пополам",
+                    "Центр пересечения перпендикуляров",
+                    "Связанный набор параметров"
+                )
+            ),
+            Question(
+                3,
+                "2 + 2 * 2 = ?",
+                listOf(
+                    "2",
+                    "4",
+                    "6",
+                    "8"
+                )
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview3() {
+    Scaffold(
+        topBar = {
+            SmallTopAppBar(
+                colors = TopAppBarDefaults.smallTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text("Testing System")
+                }
+            )
+        },
+    ) {
+        val btnText = remember { mutableStateOf("Продолжить") }
+        var currentQueNum = 0
+        val checkedState0 = remember { mutableStateOf(false) }
+        val checkedState1 = remember { mutableStateOf(false) }
+        val checkedState2 = remember { mutableStateOf(false) }
+        val checkedState3 = remember { mutableStateOf(false) }
         val queList = listOf(
             Question(
                 1,
@@ -244,168 +338,124 @@ class MainActivity3 : ComponentActivity() {
                 )
             )
         )
-        return queList
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview3() {
-    val btnText = remember { mutableStateOf("Продолжить") }
-    var currentQueNum = 0
-    val checkedState0 = remember { mutableStateOf(false) }
-    val checkedState1 = remember { mutableStateOf(false) }
-    val checkedState2 = remember { mutableStateOf(false) }
-    val checkedState3 = remember { mutableStateOf(false) }
-    val queList = listOf(
-        Question(
-            1,
-            "Биссектриса - это ...",
-            listOf(
-                "Прямая, делящая угол пополам",
-                "Прямая, делящая сторону пополам",
-                "Центр пересечения перпендикуляров",
-                "Связанный набор параметров"
-            )
-        ),
-        Question(
-            2,
-            "Медиана - это ...",
-            listOf(
-                "Прямая, делящая угол пополам",
-                "Прямая, делящая сторону пополам",
-                "Центр пересечения перпендикуляров",
-                "Связанный набор параметров"
-            )
-        ),
-        Question(
-            3,
-            "2 + 2 * 2 = ?",
-            listOf(
-                "2",
-                "4",
-                "6",
-                "8"
-            )
-        )
-    )
-    ComposeTestTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 30.dp, end = 30.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Название предмета",
-                fontSize = 34.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 20.dp)
-            )
-            Text(
-                text = "${queList[currentQueNum].queNum}/${queList.size}",
-                fontSize = 24.sp,
-                fontStyle = FontStyle.Italic,
-                modifier = Modifier.padding(top = 20.dp, start = 280.dp)
-            )
-            Text(
-                text = queList[currentQueNum].queText,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-            Row(
+        ComposeTestTheme {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .fillMaxSize()
+                    .padding(start = 30.dp, end = 30.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Checkbox(
-                    checked = checkedState0.value,
-                    onCheckedChange = { checkedState0.value = it },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                Text(
+                    text = "Название теста",
+                    fontSize = 34.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 20.dp)
                 )
                 Text(
-                    text = queList[currentQueNum].variants[0],
-                    fontSize = 18.sp
+                    text = "${queList[currentQueNum].queNum}/${queList.size}",
+                    fontSize = 24.sp,
+                    fontStyle = FontStyle.Italic,
+                    modifier = Modifier.padding(top = 20.dp, start = 280.dp)
                 )
+                Text(
+                    text = queList[currentQueNum].queText,
+                    fontSize = 20.sp,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = checkedState0.value,
+                        onCheckedChange = { checkedState0.value = it },
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Text(
+                        text = queList[currentQueNum].variants[0],
+                        fontSize = 18.sp
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = checkedState1.value,
+                        onCheckedChange = { checkedState1.value = it },
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Text(
+                        text = queList[currentQueNum].variants[1],
+                        fontSize = 18.sp
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = checkedState2.value,
+                        onCheckedChange = { checkedState2.value = it },
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Text(
+                        text = queList[currentQueNum].variants[2],
+                        fontSize = 18.sp
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = checkedState3.value,
+                        onCheckedChange = { checkedState3.value = it },
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
+                    )
+                    Text(
+                        text = queList[currentQueNum].variants[3],
+                        fontSize = 18.sp
+                    )
+                }
             }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(bottom = 30.dp, top = 720.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Checkbox(
-                    checked = checkedState1.value,
-                    onCheckedChange = { checkedState1.value = it },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-                )
-                Text(
-                    text = queList[currentQueNum].variants[1],
-                    fontSize = 18.sp
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = checkedState2.value,
-                    onCheckedChange = { checkedState2.value = it },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-                )
-                Text(
-                    text = queList[currentQueNum].variants[2],
-                    fontSize = 18.sp
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Checkbox(
-                    checked = checkedState3.value,
-                    onCheckedChange = { checkedState3.value = it },
-                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
-                )
-                Text(
-                    text = queList[currentQueNum].variants[3],
-                    fontSize = 18.sp
-                )
-            }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 30.dp, top = 720.dp),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = {
-                    if (currentQueNum == 1) {
-                        btnText.value = "Закончить тест"
-                    }
-                    if (currentQueNum == 2) {
-                        btnText.value = "Продолжить"
-                        currentQueNum = 0
-                    } else {
-                        currentQueNum++
-                    }
-                    checkedState0.value = false
-                    checkedState1.value = false
-                    checkedState2.value = false
-                    checkedState3.value = false
-                },
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                modifier = Modifier.size(height = 60.dp, width = 200.dp)
-            ) {
-                Text(text = btnText.value, fontSize = 20.sp)
+                Button(
+                    onClick = {
+                        if (currentQueNum == 1) {
+                            btnText.value = "Закончить тест"
+                        }
+                        if (currentQueNum == 2) {
+                            btnText.value = "Продолжить"
+                            currentQueNum = 0
+                        } else {
+                            currentQueNum++
+                        }
+                        checkedState0.value = false
+                        checkedState1.value = false
+                        checkedState2.value = false
+                        checkedState3.value = false
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.size(height = 60.dp, width = 200.dp)
+                ) {
+                    Text(text = btnText.value, fontSize = 20.sp)
+                }
             }
         }
     }
