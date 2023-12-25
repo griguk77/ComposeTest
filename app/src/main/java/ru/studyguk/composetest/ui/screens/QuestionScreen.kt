@@ -1,5 +1,6 @@
 package ru.studyguk.composetest.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,13 +15,17 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ru.studyguk.composetest.Question
+import ru.studyguk.composetest.domain.models.Question
 import ru.studyguk.composetest.ui.theme.ComposeTestTheme
+import ru.studyguk.composetest.ui.viewmodels.CatalogViewModel
+import ru.studyguk.composetest.ui.viewmodels.QuestionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuestionScreen(onClick: () -> Unit, onTopBarClick: () -> Unit) {
-    val queList = getQuestionList()
+fun QuestionScreen(catalogVM: CatalogViewModel, questionVM: QuestionViewModel, onClick: () -> Unit, onTopBarClick: () -> Unit) {
+    catalogVM.testName.value?.let { questionVM.getQueList(it) }
+    val queList = questionVM.queList.value
+    questionVM.setPoints(0.0)
     Scaffold(
         topBar = {
             MakeTopBar(onTopBarClick)
@@ -40,27 +45,37 @@ fun QuestionScreen(onClick: () -> Unit, onTopBarClick: () -> Unit) {
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SetTestName()
-                SetProgress(queList, currentQueNum)
-                SetQuestionText(queList, currentQueNum)
-                SetVariants(
-                    currentQueNum,
+                SetTestName(catalogVM)
+                if (queList != null) {
+                    SetProgress(queList, currentQueNum)
+                }
+                if (queList != null) {
+                    SetQuestionText(queList, currentQueNum)
+                }
+                if (queList != null) {
+                    SetVariants(
+                        currentQueNum,
+                        queList,
+                        checkedState0,
+                        checkedState1,
+                        checkedState2,
+                        checkedState3
+                    )
+                }
+            }
+            if (queList != null) {
+                SetContinueButton(
                     queList,
+                    questionVM,
+                    currentQueNum,
+                    btnText,
                     checkedState0,
                     checkedState1,
                     checkedState2,
-                    checkedState3
+                    checkedState3,
+                    onClick
                 )
             }
-            SetContinueButton(
-                currentQueNum,
-                btnText,
-                checkedState0,
-                checkedState1,
-                checkedState2,
-                checkedState3,
-                onClick
-            )
         }
     }
 }
@@ -90,6 +105,8 @@ private fun MakeTopBar(onTopBarClick: () -> Unit) {
 
 @Composable
 private fun SetContinueButton(
+    queList: List<Question>,
+    questionVM: QuestionViewModel,
     currentQueNum: MutableState<Int>,
     btnText: MutableState<String>,
     checkedState0: MutableState<Boolean>,
@@ -107,6 +124,20 @@ private fun SetContinueButton(
     ) {
         Button(
             onClick = {
+                var pointResult = 0.0
+                if (checkedState0.value) {
+                    pointResult += queList[currentQueNum.value].points[0]
+                }
+                if (checkedState1.value) {
+                    pointResult += queList[currentQueNum.value].points[1]
+                }
+                if (checkedState2.value) {
+                    pointResult += queList[currentQueNum.value].points[2]
+                }
+                if (checkedState3.value) {
+                    pointResult += queList[currentQueNum.value].points[3]
+                }
+                questionVM.setPoints(pointResult + (questionVM.pointsResult.value ?: 0.0))
                 if (currentQueNum.value == 1) {
                     btnText.value = "Закончить тест"
                 }
@@ -229,46 +260,66 @@ private fun SetQuestionText(
 }
 
 @Composable
-private fun SetTestName() {
-    Text(
-        text = "Название теста",
-        fontSize = 34.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(top = 20.dp)
-    )
+private fun SetTestName(catalogVM: CatalogViewModel) {
+    catalogVM.testName.value?.let {
+        Text(
+            text = it,
+            fontSize = 34.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 20.dp)
+        )
+    }
 }
 
-private fun getQuestionList(): List<Question> {
-    return listOf(
-        Question(
-            1,
-            "Биссектриса - это ...",
-            listOf(
-                "Прямая, делящая угол пополам",
-                "Прямая, делящая сторону пополам",
-                "Центр пересечения перпендикуляров",
-                "Связанный набор параметров"
-            )
-        ),
-        Question(
-            2,
-            "Медиана - это ...",
-            listOf(
-                "Прямая, делящая угол пополам",
-                "Прямая, делящая сторону пополам",
-                "Центр пересечения перпендикуляров",
-                "Связанный набор параметров"
-            )
-        ),
-        Question(
-            3,
-            "2 + 2 * 2 = ?",
-            listOf(
-                "2",
-                "4",
-                "6",
-                "8"
-            )
-        )
-    )
-}
+//private fun getQuestionList(): List<Question> {
+//    return listOf(
+//        Question(
+//            1,
+//            "Биссектриса - это ...",
+//            listOf(
+//                "Прямая, делящая угол пополам",
+//                "Прямая, делящая сторону пополам",
+//                "Центр пересечения перпендикуляров",
+//                "Связанный набор параметров"
+//            ),
+//            listOf(
+//                12.5,
+//                -4.16,
+//                -4.17,
+//                -4.17
+//            )
+//        ),
+//        Question(
+//            2,
+//            "Медиана - это ...",
+//            listOf(
+//                "Прямая, делящая угол пополам",
+//                "Прямая, делящая сторону пополам",
+//                "Центр пересечения перпендикуляров",
+//                "Связанный набор параметров"
+//            ),
+//            listOf(
+//                -4.16,
+//                12.5,
+//                -4.17,
+//                -4.17
+//            )
+//        ),
+//        Question(
+//            3,
+//            "2 + 2 * 2 = ?",
+//            listOf(
+//                "2",
+//                "4",
+//                "6",
+//                "8"
+//            ),
+//            listOf(
+//                -4.16,
+//                -4.17,
+//                12.5,
+//                -4.17
+//            )
+//        )
+//    )
+//}

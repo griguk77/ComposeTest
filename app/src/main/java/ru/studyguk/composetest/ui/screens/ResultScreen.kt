@@ -1,5 +1,6 @@
 package ru.studyguk.composetest.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -11,16 +12,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.studyguk.composetest.ui.viewmodels.CatalogViewModel
+import ru.studyguk.composetest.ui.viewmodels.QuestionViewModel
+import ru.studyguk.composetest.ui.viewmodels.ResultViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultScreen(onClick: () -> Unit, onTopBarClick: () -> Unit) {
+fun ResultScreen(
+    catalogVM: CatalogViewModel,
+    questionVM: QuestionViewModel,
+    resultVM: ResultViewModel,
+    onClick: () -> Unit,
+    onTopBarClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             MakeTopBar(onTopBarClick)
         },
     ) {
-        ShowResult()
+        ShowResult(catalogVM, questionVM, resultVM)
         AddRestartButton(onClick)
     }
 }
@@ -47,25 +57,32 @@ private fun AddRestartButton(onClick: () -> Unit) {
 }
 
 @Composable
-private fun ShowResult() {
+private fun ShowResult(
+    catalogVM: CatalogViewModel,
+    questionVM: QuestionViewModel,
+    resultVM: ResultViewModel
+) {
+    questionVM.pointsResult.value?.let { resultVM.setTextResult(it) }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        catalogVM.testName.value?.let {
+            Text(
+                text = it,
+                fontSize = 34.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 60.dp, start = 30.dp, end = 30.dp)
+            )
+        }
         Text(
-            text = "Название теста",
-            fontSize = 34.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(top = 60.dp, start = 30.dp, end = 30.dp)
-        )
-        Text(
-            text = "Баллы за тест",
+            text = "${questionVM.pointsResult.value}",
             fontSize = 24.sp,
             modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp)
         )
         Text(
-            text = "Текстовый комментарий к результату теста",
+            text = "${resultVM.textResult.value}",
             fontSize = 20.sp,
             modifier = Modifier.padding(top = 50.dp, start = 30.dp, end = 30.dp),
             textAlign = TextAlign.Center

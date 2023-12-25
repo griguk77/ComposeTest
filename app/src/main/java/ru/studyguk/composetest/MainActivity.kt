@@ -1,6 +1,7 @@
 package ru.studyguk.composetest
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
@@ -16,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,11 +26,19 @@ import ru.studyguk.composetest.ui.screens.LoginScreen
 import ru.studyguk.composetest.ui.screens.QuestionScreen
 import ru.studyguk.composetest.ui.screens.ResultScreen
 import ru.studyguk.composetest.ui.theme.ComposeTestTheme
+import ru.studyguk.composetest.ui.viewmodels.CatalogViewModel
+import ru.studyguk.composetest.ui.viewmodels.LoginViewModel
+import ru.studyguk.composetest.ui.viewmodels.QuestionViewModel
+import ru.studyguk.composetest.ui.viewmodels.ResultViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val loginVM: LoginViewModel = viewModel()
+            val catalogVM: CatalogViewModel = viewModel()
+            val questionVM: QuestionViewModel = viewModel()
+            val resultVM: ResultViewModel = viewModel()
             val navController = rememberNavController()
             ComposeTestTheme {
                 NavHost(
@@ -36,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     startDestination = LOGIN_SCREEN
                 ) {
                     composable(LOGIN_SCREEN) {
-                        LoginScreen {
+                        LoginScreen(loginVM) {
                             navController.navigate(CATALOG_SCREEN) {
                                 popUpTo(LOGIN_SCREEN)
                             }
@@ -44,6 +54,8 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(CATALOG_SCREEN) {
                         CatalogScreen(
+                            loginVM = loginVM,
+                            catalogVM = catalogVM,
                             onClick = {
                                 navController.navigate(QUESTION_SCREEN) {
                                     popUpTo(CATALOG_SCREEN)
@@ -61,6 +73,8 @@ class MainActivity : ComponentActivity() {
                     }
                     composable(QUESTION_SCREEN) {
                         QuestionScreen(
+                            catalogVM = catalogVM,
+                            questionVM = questionVM,
                             onClick = {
                                 navController.navigate(RESULT_SCREEN) {
                                     popUpTo(CATALOG_SCREEN)
@@ -76,7 +90,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(RESULT_SCREEN) {
+                        Log.d("RRR", catalogVM.testName.value.toString())
+                        Log.d("RRR", questionVM.pointsResult.value.toString())
                         ResultScreen(
+                            catalogVM = catalogVM,
+                            questionVM = questionVM,
+                            resultVM = resultVM,
                             onClick = {
                                 navController.navigate(QUESTION_SCREEN) {
                                     popUpTo(CATALOG_SCREEN)

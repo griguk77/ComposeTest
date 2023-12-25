@@ -11,10 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.studyguk.composetest.ui.viewmodels.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(onClick: () -> Unit) {
+fun LoginScreen(loginVM: LoginViewModel, onClick: () -> Unit) {
     Scaffold(
         topBar = {
             MakeBasicTopBar()
@@ -89,7 +90,7 @@ fun LoginScreen(onClick: () -> Unit) {
                     }
                 }
             )
-            SetLoginButton(onClick)
+            SetLoginButton(onClick, textName, loginVM)
         }
     }
 }
@@ -108,9 +109,10 @@ private fun MakeBasicTopBar() {
 }
 
 @Composable
-private fun SetLoginButton(onClick: () -> Unit) {
+private fun SetLoginButton(onClick: () -> Unit, textName: String, loginVM: LoginViewModel) {
     Button(
         onClick = {
+            loginVM.login(textName)
             onClick()
         },
         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),

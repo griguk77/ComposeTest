@@ -16,18 +16,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.studyguk.composetest.ui.viewmodels.CatalogViewModel
+import ru.studyguk.composetest.ui.viewmodels.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(onClick: () -> Unit, onTopBarClick: () -> Unit, applicationContext: Context) {
-    val testList = listOf(
-        "Биология",
-        "История",
-        "Математика",
-        "Политические координаты",
-        "Русский язык",
-        "Химия"
-    )
+fun CatalogScreen(
+    loginVM: LoginViewModel,
+    catalogVM: CatalogViewModel,
+    onClick: () -> Unit,
+    onTopBarClick: () -> Unit,
+    applicationContext: Context
+) {
+    catalogVM.showCatalog()
+    val testList = catalogVM.catalog.value
     Scaffold(
         topBar = {
             MakeTopBar(onTopBarClick)
@@ -41,14 +43,16 @@ fun CatalogScreen(onClick: () -> Unit, onTopBarClick: () -> Unit, applicationCon
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SetGreetingsText()
+            SetGreetingsText(loginVM)
             LazyColumn(
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier.padding(start = 30.dp)
             ) {
-                items(testList.size) {
-                    SetTestItem(testList, it, onClick)
+                if (testList != null) {
+                    items(testList.size) {
+                        SetTestItem(catalogVM, testList, it, onClick)
+                    }
                 }
             }
         }
@@ -98,13 +102,14 @@ private fun MakeTopBar(onTopBarClick: () -> Unit) {
 }
 
 @Composable
-private fun SetTestItem(testList: List<String>, it: Int, onClick: () -> Unit) {
+private fun SetTestItem(catalogVM: CatalogViewModel, testList: List<String>, it: Int, onClick: () -> Unit) {
     Text(
         text = testList[it],
         fontSize = 24.sp,
         modifier = Modifier
             .size(height = 90.dp, width = 10000.dp)
             .clickable(onClick = {
+                catalogVM.saveTestName(testList[it])
                 onClick()
             }),
         style = TextStyle(textDecoration = TextDecoration.Underline)
@@ -112,9 +117,9 @@ private fun SetTestItem(testList: List<String>, it: Int, onClick: () -> Unit) {
 }
 
 @Composable
-private fun SetGreetingsText() {
+private fun SetGreetingsText(loginVM: LoginViewModel) {
     Text(
-        text = "Здравствуйте, Пользователь!",
+        text = "Здравствуйте, ${loginVM.userName.value}!",
         fontSize = 24.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(top = 60.dp, bottom = 40.dp)
