@@ -25,18 +25,17 @@ import ru.studyguk.composetest.ui.screens.LoginScreen
 import ru.studyguk.composetest.ui.screens.QuestionScreen
 import ru.studyguk.composetest.ui.screens.ResultScreen
 import ru.studyguk.composetest.ui.theme.ComposeTestTheme
-import ru.studyguk.composetest.ui.viewmodels.CatalogViewModel
-import ru.studyguk.composetest.ui.viewmodels.LoginViewModel
-import ru.studyguk.composetest.ui.viewmodels.QuestionViewModel
-import ru.studyguk.composetest.ui.viewmodels.ResultViewModel
+import ru.studyguk.composetest.ui.viewmodels.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val loginVM: LoginViewModel = viewModel()
-            val catalogVM: CatalogViewModel = viewModel()
-            val questionVM: QuestionViewModel = viewModel()
+            val catalogVM: CatalogViewModel =
+                viewModel(factory = CatalogViewModelFactory(application))
+            val questionVM: QuestionViewModel =
+                viewModel(factory = QuestionViewModelFactory(application))
             val resultVM: ResultViewModel = viewModel()
             val navController = rememberNavController()
             ComposeTestTheme {

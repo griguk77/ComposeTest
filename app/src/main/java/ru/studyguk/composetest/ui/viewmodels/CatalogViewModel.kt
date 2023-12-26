@@ -3,8 +3,11 @@ package ru.studyguk.composetest.ui.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import ru.studyguk.composetest.domain.usecases.OpenCatalogUseCase
 
-class CatalogViewModel : ViewModel() {
+class CatalogViewModel(private val openCatalogUseCase: OpenCatalogUseCase) : ViewModel() {
     private val _catalog = MutableLiveData<List<String>>()
     var catalog: LiveData<List<String>> = _catalog
 
@@ -12,14 +15,9 @@ class CatalogViewModel : ViewModel() {
     var testName: LiveData<String> = _testName
 
     fun showCatalog() {
-        _catalog.value = listOf(
-            "Биология",
-            "История",
-            "Математика",
-            "Политические координаты",
-            "Русский язык",
-            "Химия"
-        )
+        viewModelScope.launch {
+            _catalog.value = openCatalogUseCase.openCatalog()
+        }
     }
 
     fun saveTestName(name: String) {
