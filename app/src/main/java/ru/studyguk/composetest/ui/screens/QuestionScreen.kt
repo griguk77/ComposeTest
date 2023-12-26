@@ -1,6 +1,5 @@
 package ru.studyguk.composetest.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,7 +24,6 @@ import ru.studyguk.composetest.ui.viewmodels.QuestionViewModel
 fun QuestionScreen(catalogVM: CatalogViewModel, questionVM: QuestionViewModel, onClick: () -> Unit, onTopBarClick: () -> Unit) {
     catalogVM.testName.value?.let { questionVM.getQueList(it) }
     val queList = questionVM.queList.value
-    questionVM.setPoints(0.0)
     Scaffold(
         topBar = {
             MakeTopBar(onTopBarClick)
@@ -124,6 +122,9 @@ private fun SetContinueButton(
     ) {
         Button(
             onClick = {
+                if (currentQueNum.value == 0) {
+                    questionVM.setPoints(0.0)
+                }
                 var pointResult = 0.0
                 if (checkedState0.value) {
                     pointResult += queList[currentQueNum.value].points[0]

@@ -1,7 +1,6 @@
 package ru.studyguk.composetest
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
@@ -90,8 +89,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(RESULT_SCREEN) {
-                        Log.d("RRR", catalogVM.testName.value.toString())
-                        Log.d("RRR", questionVM.pointsResult.value.toString())
                         ResultScreen(
                             catalogVM = catalogVM,
                             questionVM = questionVM,
