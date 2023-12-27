@@ -16,10 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.studyguk.composetest.ui.screens.CatalogScreen
 import ru.studyguk.composetest.ui.screens.LoginScreen
 import ru.studyguk.composetest.ui.screens.QuestionScreen
@@ -31,12 +31,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val loginVM: LoginViewModel = viewModel()
-            val catalogVM: CatalogViewModel =
-                viewModel(factory = CatalogViewModelFactory(application))
-            val questionVM: QuestionViewModel =
-                viewModel(factory = QuestionViewModelFactory(application))
-            val resultVM: ResultViewModel = viewModel()
+            val loginVM by viewModel<LoginViewModel>()
+            val catalogVM by viewModel<CatalogViewModel>()
+            val questionVM by viewModel<QuestionViewModel>()
+            val resultVM by viewModel<ResultViewModel>()
             val navController = rememberNavController()
             ComposeTestTheme {
                 NavHost(
